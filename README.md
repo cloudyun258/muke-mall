@@ -1,24 +1,14 @@
-# muke-front
+### Muke-Mall简易商城
 
-## Project setup
-```
-npm install
-```
+<br>
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+--->    muke-mall 是使用 Vue.js 开发的简易商城网站
 
-### Compiles and minifies for production
-```
-npm run build
-```
+<br>
 
-### Lints and fixes files
-```
-npm run lint
-```
+--->    muke-api 是使用 Node.js + Mongoose + Express 开发的后台接口
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+<br>
+
+Muke-Mall是个人用于提升和巩固 `Vue.js` 和 `Node.js` 知识而开发的简易商城项目，暂时未上线。
+
