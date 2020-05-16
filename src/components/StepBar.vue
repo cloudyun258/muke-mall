@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div class="step-bar">
+
   </div>
 </template>
 
 <script>
   export default {
-    name: 'App'
+    name: 'StepBar'
   }
 </script>
 

@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div class="nav-footer">
+
   </div>
 </template>
 
 <script>
   export default {
-    name: 'App'
+    name: 'NavFooter'
   }
 </script>
 
