@@ -7,6 +7,42 @@
   margin: 0 auto
   box-sizing: border-box
 
+// 清除浮动
+.clearfloat
+  zoom: 1
+  &:after
+    display: block
+    clear: both
+    content: ""
+    visibility: hidden
+    height: 0
+
+// 按钮通用样式
+.btn
+  display: inline-block
+  text-align: center
+  font-family: moderat, sans-serif
+  font-weight: 700
+  font-size: 14px
+  letter-spacing: .25em
+  height: 40px
+  line-height: 40px
+  box-sizing: border-box
+  border: 1px solid #d1434a
+  color: #d1434a 
+  transition: all .3s ease-out
+  &.empty
+    &:hover
+      background-color: #ffe5e6
+  &.solid
+    background-color: #d1434a 
+    color: #ffffff 
+    &:hover
+      background-color: #f16f75
+      border-color: #f16f75
+      color: #ffffff !important
+
+  
 @media only screen and (max-width: 767px)
   html 
     font-size: 12.5px
@@ -23,5 +59,3 @@
   html 
     font-size: 10px
 
-body
-  height: 2000px

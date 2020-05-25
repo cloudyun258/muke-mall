@@ -1,6 +1,25 @@
 // 混合方法文件
 
+// flex
 flex-one($row=space-between, $col=center)
   display: flex
   justify-content: $row
   align-items: $col
+
+// 定位
+pos-base($pos=absolute, $left=0, $top=0, $right=auto, $w=100%, $h=100%)
+  position: $pos
+  left: $left
+  right: $right
+  top: $top
+  width: $w
+  height: $h
+
+// 精灵图
+spite-icon($w, $h, $url, $pos-x=0, $pos-y=0)
+  display: inline-block
+  width: $w
+  height: $h
+  background-image: url($url)
+  background-repeat: no-repeat
+  background-position: $pos-x $pos-y
