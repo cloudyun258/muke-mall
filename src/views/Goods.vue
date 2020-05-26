@@ -14,8 +14,8 @@
       <div class="filter-nav">
         <span class="sortby">Sort by:</span>
         <a href="javascript:;" class="default">Default</a>
-        <a href="javascript:;">Price
-          <svg class="icon arrow-short-icon">
+        <a href="javascript:;" @click="sortPrice">Price
+          <svg class="icon arrow-short-icon" :class="{'sort-arrow': priceSort === -1}">
             <use xlink:href="#icon-arrow-short"></use>
           </svg>
         </a>
@@ -32,8 +32,8 @@
                   class="fil-range" 
                   v-for="(item, index) in filterRange" 
                   :key="index"
-                  :class="{'active': selRange === index }"
-                  @click="selRange=index"
+                  :class="{'active': priceRange === index }"
+                  @click="priceFilter(index)"
                 >
                   {{ item }}
                 </li>
@@ -50,8 +50,8 @@
               class="fil-range" 
               v-for="(item, index) in filterRange" 
               :key="index"
-              :class="{'active': selRange === index }"
-              @click="selRange=index"
+              :class="{'active': priceRange === index }"
+              @click="priceFilter(index)"
             >
               {{ item }}
             </li>
@@ -59,21 +59,28 @@
         </div>
         <div class="right">
           <ul class="pro-item-wrap clearfloat">
-            <li class="pro-item" v-for="(item ,index) in [0,0,0,0,0,0,]" :key="index">
+            <li class="pro-item" v-for="(item, index) in goodsList" :key="index">
               <div class="pic">
                 <a href="javascript:;">
-                  <img src="../assets/images/zipai.jpg">
+                  <img v-lazy="item.productImage">
                 </a>
               </div>
               <div class="main">
-                <div class="name">自拍杆</div>
-                <div class="price">$39.00</div>
+                <div class="name">{{ item.productName }}</div>
+                <div class="price">{{ item.salePrice | fmtMoney }}</div>
                 <div class="btn-area">
                   <button class="btn empty add" @click="showModel=true">加入购物车</button>
                 </div>
               </div>
             </li>
           </ul>
+          <div class="loadmore"
+            v-infinite-scroll="scrollMore" 
+            infinite-scroll-disabled="busy" 
+            infinite-scroll-distance="50"
+          >
+            <img v-show="loading" src="../assets/images/svg/loading-spinning-bubbles.svg">
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +104,7 @@
 <script>
   import NavBread from "@/components/NavBread"
   import ModelFrame from "@/components/ModelFrame"
+  import infiniteScroll from 'vue-infinite-scroll'
 
   export default {
     name: 'Goods',
@@ -107,28 +115,98 @@
         // 过滤区间
         filterRange: ['All', '0.00 - 100.00', '100.00 - 500.00', 
         '500.00 - 1000.00', '1000.00 - 5000.00'],
-        // 控制区间的选中
-        selRange: 0,
+        // 控制价格区间的选中
+        priceRange: 0,
         // 控制购物车提示框的显示
-        showModel: false
+        showModel: false,
+        // 商品数据
+        goodsList: [],
+        // 控制商品价格的升降序
+        priceSort: 1,
+        // 当前是第几页
+        page: 1,
+        // 每页商品条数
+        pageSize: 8,
+        // 是否触发滚动更多, false为可以触发
+        busy: false,
+        // 控制加载动画的显示
+        loading: false
       }
     },
     created () {
       // 当窗口大于 768px 时隐藏过滤弹出框
       window.addEventListener('resize', this.scopeWidth)
+      // 获取商品数据
+      this.getGoodsList()
     },
     beforeDestroy () {
       // 组件销毁时移除事件
       window.removeEventListener('resize', this.scopeWidth)
     },
     methods: {
+      // 判断浏览器窗口宽度
       scopeWidth () {
         let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
         if (width > 768 && this.showFilter) {
           this.showFilter = false
           return
         }
+      },
+      // 获取商品数据
+      getGoodsList () {
+        this.axios.get('/goodsList', {
+          params: {
+            page: this.page,
+            pageSize: this.pageSize,
+            sort: this.priceSort,
+            priceRange: this.priceRange
+          }
+        }).then(res => {
+           // 如果是最后一页了，则将busy置为true
+          if (res.data.data.length < this.pageSize) {
+            this.busy = true
+          } else {
+            this.busy = false
+          }
+          // 关闭加载动画
+          this.loading = false
+          // 如果是第一页则直接赋值
+          if (this.page === 1) {
+            this.goodsList = res.data.data
+          } else {
+            // 不是第一页则拼接数组
+            this.goodsList = this.goodsList.concat(res.data.data)
+          }
+        }).catch(err => {})
+      },
+      // 价格升降序排序
+      sortPrice () {
+        // 重置页数
+        this.page = 1
+        this.priceSort = this.priceSort === 1 ? -1 : 1
+        // 重新拉取数据
+        this.getGoodsList()
+      },
+      // 滚动加载触发函数
+      scrollMore () {
+        // 防止刚刷新页面请求第二页数据
+        if (this.goodsList.length === 0) return
+        // 获取下一页数据
+        this.page ++
+         // 发请求之前把 busy 置为true, 防止多次加载
+        this.busy = true
+        this.loading = true
+        this.getGoodsList()
+      },
+      // 价格过滤
+      priceFilter (index) {
+        this.priceRange = index
+        this.page = 1
+        this.getGoodsList()
       }
+    },
+    directives: {
+      infiniteScroll
     },
     components: {
       NavBread,
@@ -187,7 +265,9 @@
       .arrow-short-icon
         width: 11px
         height: 11px
-        transform: rotateX(180deg) 
+        transform: rotateX(180deg)
+        &.sort-arrow
+          transform: rotateX(0deg)
     .filter-model
       pos-base(fixed)
       z-index: 10 
@@ -269,6 +349,20 @@
             padding-left: 15px
       .right
         flex: 1 
+        .loadmore
+          width: 70px 
+          height: 70px 
+          margin: 40px auto 0 auto
+          text-align: center
+          @media only screen and (max-width: 767px)
+            width: 60px 
+            height: 60px
+            margin-top: 0px
+            margin-bottom: 10px 
+          img
+            width: 70px
+            @media only screen and (max-width: 767px)
+              width: 60px 
         .pro-item-wrap
           width: 100% 
           .pro-item

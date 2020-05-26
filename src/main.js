@@ -5,6 +5,7 @@ import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyload from 'vue-lazyload'
+import { moneyFormat } from '../utils/money'
 
 // 全局导入 reset.styl 文件
 import '@/assets/stylus/reset.styl'
@@ -15,9 +16,12 @@ Vue.use(VueAxios, axios)
 
 // 图片懒加载插件全局配置
 Vue.use(VueLazyload, {
-  // 图片未加载出来的占位图片
-  loading: ''
+  // 图片未加载出来的占位图片, 通过 ../assests/images/svg/ 好像访问不到, 要根目录public
+  loading: '/svg/loading-bars.svg'
 })
+
+// 注册全局过滤器, 用于格式化金钱
+Vue.filter('fmtMoney', moneyFormat)
 
 // 配置公共请求路径, 公共请求路径实际为 http://localhost:8080/api
 axios.defaults.baseURL = '/api'

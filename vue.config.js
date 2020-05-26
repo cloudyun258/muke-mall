@@ -5,7 +5,7 @@ module.exports = {
     // 接口代理
     proxy: {
       '/api': {
-        target: 'http://mall-pre.springboot.cn',
+        target: 'http://localhost:3004',
         changeOrigin: true,
         pathRewrite: {
           '/api': ''

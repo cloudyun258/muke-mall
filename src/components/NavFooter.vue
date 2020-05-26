@@ -60,7 +60,9 @@
   @import "../assets/stylus/mixins.styl"
 
   .nav-footer
-    margin-top: 50px 
+    margin-top: 50px
+    @media only screen and (max-width: 767px)
+      margin-top: 0 
     .container
       flex-one()
       max-width: 1260px 
