@@ -13,7 +13,7 @@
       </div>
       <div class="right">
         <span class="username">admin</span>
-        <a href="javascript:;" class="logout">Logout</a>
+        <a href="javascript:;" class="logout" @click="logout">Logout</a>
         <a href="javascript:;" class="login" @click="showLogin">Login</a>
         <div class="cart">
           <span class="cart-num">11</span>
@@ -36,12 +36,12 @@
           <div class="input username">
             <span class="spite spite-name"></span>
             <input type="text" placeholder="User Name" 
-            v-model="username" @keydown.enter="login">
+            v-model="username" @keydown.enter="toggleAction">
           </div>
           <div class="input username">
             <span class="spite spite-word"></span>
             <input type="password" placeholder="Password" 
-            v-model="password" @keydown.enter="login">
+            v-model="password" @keydown.enter="toggleAction">
           </div>
         </div>
         <div class="btnB">
@@ -53,7 +53,14 @@
         </div>
       </template>
     </model-frame>
-    <tip-frame ref="tips" :message="tipMsg"></tip-frame>
+    <tip-frame 
+      ref="tips" 
+      :message="tipMsg" 
+      :tipFlag="tipFlag"
+      @showmsg="tipFlag=true"
+      @hidemsg="tipFlag=false"
+    >
+    </tip-frame>
   </div>
 </template>
 
@@ -77,6 +84,8 @@
         errorFlag: false,
         // 消息内容
         tipMsg: '',
+        // 控制消息框的显示
+        tipFlag: false,
         // 登录注册框框标题
         title: 'Login in',
         // 登录注册的切换
@@ -112,7 +121,7 @@
             if (toggleType) {
               // 登录成功
               this.tipMsg = res.msg
-              this.$refs.tips.show()
+              this.tipFlag = true
               this.showModel = false
               // 将 token写入localsotage
               localStorage.setItem('token', res.token)
@@ -129,6 +138,13 @@
         this.errorFlag = false
         this.toggleType = !this.toggleType
         this.title = this.toggleType ? 'Login in' : 'Register user'
+      },
+      // 退出登录
+      logout () {
+        this.tipMsg = '退出成功'
+        this.tipFlag = true
+        // 移除token
+        localStorage.removeItem('token')
       }
     },
     components: {

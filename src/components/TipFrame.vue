@@ -40,12 +40,11 @@
       duration: {
         type: Number,
         default: 3000
-      }
-    },
-    data () {
-      return {
-        // 控制提示框的显示
-        tipFlag: false
+      },
+      // 控制显示
+      tipFlag: {
+        type: Boolean,
+        default: false
       }
     },
     watch: {
@@ -60,10 +59,10 @@
     },
     methods: {
       show () {
-        this.tipFlag = true
+        this.$emit('showmsg', true)
       },
       hide () {
-        this.tipFlag = false
+        this.$emit('hidemsg', false)
       }
     }
   }

@@ -31,11 +31,22 @@ axios.defaults.timeout = 8000
 
 Vue.config.productionTip = false
 
+// 请求拦截器
+axios.interceptors.request.use(function (config) {
+  // 携带token, 设置请求头
+  config.headers['Authorization'] = localStorage.getItem('token') || ''
+  return config
+}, function (error) {
+  // 对请求错误做些什么
+ return Promise.reject(error)
+})
+
 // 响应拦截器
 axios.interceptors.response.use(function (response) {
   // 获取服务器返回的数据
   return response.data
 }, function (error) {
+  // 对响应错误做些什么
   return Promise.reject(error.response.data)
 })
 

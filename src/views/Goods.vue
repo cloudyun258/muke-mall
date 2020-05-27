@@ -69,7 +69,7 @@
                 <div class="name">{{ item.productName }}</div>
                 <div class="price">{{ item.salePrice | fmtMoney }}</div>
                 <div class="btn-area">
-                  <button class="btn empty add" @click="showModel=true">加入购物车</button>
+                  <button class="btn empty add" @click="addCart">加入购物车</button>
                 </div>
               </div>
             </li>
@@ -98,7 +98,15 @@
         </div>
       </template>
     </model-frame>
-    <tip-frame ref="tips"></tip-frame>
+    <tip-frame 
+      ref="tips" 
+      :message="tipMsg" 
+      :tipFlag="tipFlag"
+      :mode="tipMode"
+      @showmsg="tipFlag=true"
+      @hidemsg="tipFlag=false"
+    >
+    </tip-frame>
   </div>
 </template>
 
@@ -132,7 +140,13 @@
         // 是否触发滚动更多, false为可以触发
         busy: false,
         // 控制加载动画的显示
-        loading: false
+        loading: false,
+        // 消息内容
+        tipMsg: '',
+        // 控制消息框的显示
+        tipFlag: false,
+        // 消息框的类型
+        tipMode: 0
       }
     },
     created () {
@@ -205,6 +219,19 @@
         this.priceRange = index
         this.page = 1
         this.getGoodsList()
+      },
+      // 添加购物车
+      addCart () {
+        this.axios.post('/addCart').then(res => {
+          console.log(res)
+          if (res.status === 1) {
+            this.tipMsg = res.msg
+            this.tipMode = 1
+            this.tipFlag = true
+            return
+          }
+          this.showModel = true
+        }).catch(err => {})
       }
     },
     directives: {

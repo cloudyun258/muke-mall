@@ -39,6 +39,7 @@
 
   .model-frame
     pos-base(fixed)
+    z-index: 999 
     &.slide-enter, &.slide-leave-to
       top: -100%
     &.slide-leave-active
