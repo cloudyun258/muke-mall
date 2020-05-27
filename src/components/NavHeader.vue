@@ -27,47 +27,113 @@
     </div>
     <model-frame :showModel="showModel" @closeframe="showModel=false">
       <template v-slot:content>
-        <h3 class="title">Login in</h3>
-        <div class="error-wrap" v-if="false">
+        <h3 class="title">{{ title }}</h3>
+        <div class="error-wrap" v-show="errorFlag">
           <span class="spite spite-error"></span>
-          <span class="error-msg">用户名或者密码错误</span>
+          <span class="error-msg">{{ errorMsg }}</span>
         </div>
         <div class="input-wrap">
           <div class="input username">
             <span class="spite spite-name"></span>
-            <input type="text" placeholder="User Name">
+            <input type="text" placeholder="User Name" 
+            v-model="username" @keydown.enter="login">
           </div>
           <div class="input username">
             <span class="spite spite-word"></span>
-            <input type="password" placeholder="Password">
+            <input type="password" placeholder="Password" 
+            v-model="password" @keydown.enter="login">
           </div>
         </div>
         <div class="btnB">
-          <button class="btnB-login">登 录</button>
+          <button class="btnB-login" @click="toggleAction" v-show="toggleType">登 录</button>
+          <button class="btnB-login" @click="toggleAction" v-show="!toggleType">立即注册</button>
+        </div>
+        <div class="register-img-wrap">
+          <img src="../assets/images/zhinai_2.png" title="登录 / 注册切换" @click="toggle">
         </div>
       </template>
     </model-frame>
+    <tip-frame ref="tips" :message="tipMsg"></tip-frame>
   </div>
 </template>
 
 <script>
   import ModelFrame from "@/components/ModelFrame"
+  import TipFrame from "@/components/TipFrame"
 
   export default {
     name: 'NavHeader',
     data () {
       return {
         // 控制登录框得显示
-        showModel: false
+        showModel: false,
+        // 账号
+        username: 'admin',
+        // 密码
+        password: 'admin123',
+        // 错误提示信息
+        errorMsg: '账号或密码错误',
+        // 控制错误信息的显示
+        errorFlag: false,
+        // 消息内容
+        tipMsg: '',
+        // 登录注册框框标题
+        title: 'Login in',
+        // 登录注册的切换
+        toggleType: true 
       }
     },
     methods: {
+      // 显示登录框
       showLogin () {
         this.showModel = true
+      },
+      // 登录注册
+      toggleAction () {
+        const { username, password, toggleType} = this
+        if (!username || !password) {
+          this.errorMsg = '用户名或密码不能为空'
+          this.errorFlag = true
+          return
+        }
+        // 判断此时是出于登录还是注册
+        const url = toggleType ? '/login' : '/register'
+        this.axios.post(url, {
+          username,
+          password
+        }).then(res => {
+          console.log(res)
+          // 用户名密码错误, 用户已存在
+          if (res.status === 1) {
+            this.errorFlag = true
+            this.errorMsg = res.msg
+          } else {
+            this.errorFlag = false
+            if (toggleType) {
+              // 登录成功
+              this.tipMsg = res.msg
+              this.$refs.tips.show()
+              this.showModel = false
+              // 将 token写入localsotage
+              localStorage.setItem('token', res.token)
+            } else {
+              // 注册成功
+              this.toggleType = true
+              this.title = 'Login in'
+            }
+          }
+        }).catch(err => {})
+      },
+      // 登录注册切换
+      toggle () {
+        this.errorFlag = false
+        this.toggleType = !this.toggleType
+        this.title = this.toggleType ? 'Login in' : 'Register user'
       }
     },
     components: {
-      ModelFrame
+      ModelFrame,
+      TipFrame
     }
   }
 </script>
@@ -134,7 +200,7 @@
       padding: 0 0 7px 17px
       .spite-error
         position: absolute
-        top: 4px
+        top: 6px
         left: 0 
         spite-icon(15px, 16px , $imgUrl + "icon.png", 0, -102px)
       .error-msg
@@ -170,5 +236,11 @@
         background-color: #009de6
         color: $colorG
         font-size: $fontG
+    .register-img-wrap
+      pos-base(absolute, auto, auto, 5px, 46px, 62px)
+      bottom: 5px
+      cursor: pointer
+      img
+        width: 100%  
 
 </style>

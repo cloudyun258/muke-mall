@@ -98,12 +98,14 @@
         </div>
       </template>
     </model-frame>
+    <tip-frame ref="tips"></tip-frame>
   </div>
 </template>
 
 <script>
   import NavBread from "@/components/NavBread"
   import ModelFrame from "@/components/ModelFrame"
+  import TipFrame from "@/components/TipFrame"
   import infiniteScroll from 'vue-infinite-scroll'
 
   export default {
@@ -163,7 +165,7 @@
           }
         }).then(res => {
            // 如果是最后一页了，则将busy置为true
-          if (res.data.data.length < this.pageSize) {
+          if (res.data.length < this.pageSize) {
             this.busy = true
           } else {
             this.busy = false
@@ -172,13 +174,13 @@
           this.loading = false
           // 如果是第一页则直接赋值
           if (this.page === 1) {
-            this.goodsList = res.data.data
+            this.goodsList = res.data
           } else {
             // 不是第一页则拼接数组
-            this.goodsList = this.goodsList.concat(res.data.data)
+            this.goodsList = this.goodsList.concat(res.data)
           }
         }).catch(err => {})
-      },
+      },  
       // 价格升降序排序
       sortPrice () {
         // 重置页数
@@ -210,7 +212,8 @@
     },
     components: {
       NavBread,
-      ModelFrame
+      ModelFrame,
+      TipFrame
     }
   }
 </script>

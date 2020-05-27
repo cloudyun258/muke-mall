@@ -10,6 +10,7 @@ import { moneyFormat } from '../utils/money'
 // 全局导入 reset.styl 文件
 import '@/assets/stylus/reset.styl'
 import '@/assets/stylus/common.styl'
+import '@/assets/stylus/iconfont.styl'
 
 // 通过 vue-axios 将 axios 挂载到 vue实例 上
 Vue.use(VueAxios, axios)
@@ -29,6 +30,14 @@ axios.defaults.baseURL = '/api'
 axios.defaults.timeout = 8000
 
 Vue.config.productionTip = false
+
+// 响应拦截器
+axios.interceptors.response.use(function (response) {
+  // 获取服务器返回的数据
+  return response.data
+}, function (error) {
+  return Promise.reject(error.response.data)
+})
 
 new Vue({
   router,
