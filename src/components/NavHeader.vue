@@ -15,7 +15,7 @@
         <span class="username">{{ userName }}</span>
         <a href="javascript:;" class="logout" @click="logout" v-if="userName">Logout</a>
         <a href="javascript:;" class="login" @click="showLogin" v-if="!userName">Login</a>
-        <div class="cart">
+        <div class="cart" @click="goCart">
           <span class="cart-num" v-if="userName">{{ cartCount }}</span>
           <span>
             <svg class="icon cart-icon">
@@ -109,7 +109,7 @@
       },
       // 登录注册
       toggleAction () {
-        const { username, password, toggleType} = this
+        const { username, password, toggleType } = this
         if (!username || !password) {
           this.errorMsg = '用户名或密码不能为空'
           this.errorFlag = true
@@ -165,8 +165,12 @@
         this.$store.dispatch('saveCartCount', 0)
         // 移除token
         localStorage.removeItem('token')
+      },
+      // 跳转到购物车
+      goCart () {
+        this.$router.push('/cart')
       }
-    },
+     },
     components: {
       ModelFrame,
       TipFrame
