@@ -12,11 +12,11 @@
         <a href="/#/goods"><img src="../assets/images/logo1.png"></a>
       </div>
       <div class="right">
-        <span class="username">admin</span>
-        <a href="javascript:;" class="logout" @click="logout">Logout</a>
-        <a href="javascript:;" class="login" @click="showLogin">Login</a>
+        <span class="username">{{ userName }}</span>
+        <a href="javascript:;" class="logout" @click="logout" v-if="userName">Logout</a>
+        <a href="javascript:;" class="login" @click="showLogin" v-if="!userName">Login</a>
         <div class="cart">
-          <span class="cart-num">11</span>
+          <span class="cart-num" v-if="userName">{{ cartCount }}</span>
           <span>
             <svg class="icon cart-icon">
               <use xlink:href="#icon-cart"></use>
@@ -92,6 +92,16 @@
         toggleType: true 
       }
     },
+    computed: {
+       // 使用 state 中的 username, 这里不直接写在data中是因为 axios请求需要时间
+      userName () {
+        return this.$store.state.username
+      },
+      // 使用 state 中的 cartCount
+      cartCount () {
+        return this.$store.state.cartCount
+      }
+    },
     methods: {
       // 显示登录框
       showLogin () {
@@ -111,7 +121,6 @@
           username,
           password
         }).then(res => {
-          console.log(res)
           // 用户名密码错误, 用户已存在
           if (res.status === 1) {
             this.errorFlag = true
@@ -123,6 +132,14 @@
               this.tipMsg = res.msg
               this.tipFlag = true
               this.showModel = false
+              // 计算商品总数
+              let cartCount = 0
+              res.data.cartList.forEach(item => {
+                cartCount += item.productNum 
+              })
+              // 保存用户名和购物车数量到vuex中
+              this.$store.dispatch('saveUserName', res.data.userName)
+              this.$store.dispatch('saveCartCount', cartCount)
               // 将 token写入localsotage
               localStorage.setItem('token', res.token)
             } else {
@@ -143,6 +160,9 @@
       logout () {
         this.tipMsg = '退出成功'
         this.tipFlag = true
+        // 清除vuex中的数据
+        this.$store.dispatch('saveUserName', '')
+        this.$store.dispatch('saveCartCount', 0)
         // 移除token
         localStorage.removeItem('token')
       }
@@ -189,9 +209,7 @@
           padding-left: 15px
           cursor: pointer
           .cart-num
-            position: absolute
-            top: -9px
-            right: -11px
+            pos-base(absolute, auto, -9px, -11px, 20px, auto)
             background-color: #eb767d
             font-weight: 700
             text-align: center

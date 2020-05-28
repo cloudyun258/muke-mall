@@ -69,7 +69,7 @@
                 <div class="name">{{ item.productName }}</div>
                 <div class="price">{{ item.salePrice | fmtMoney }}</div>
                 <div class="btn-area">
-                  <button class="btn empty add" @click="addCart">加入购物车</button>
+                  <button class="btn empty add" @click="addCart(item.productId)">加入购物车</button>
                 </div>
               </div>
             </li>
@@ -221,15 +221,22 @@
         this.getGoodsList()
       },
       // 添加购物车
-      addCart () {
-        this.axios.post('/addCart').then(res => {
-          console.log(res)
+      addCart (productId) {
+        this.axios.post('/addCart', {
+          productId: productId
+        }).then(res => {
           if (res.status === 1) {
             this.tipMsg = res.msg
             this.tipMode = 1
             this.tipFlag = true
             return
           }
+          let cartCount = 0
+            res.data.cartList.forEach(item => {
+              cartCount += item.productNum 
+          })
+          // 保存购物车数量到vuex中
+          this.$store.dispatch('saveCartCount', cartCount)
           this.showModel = true
         }).catch(err => {})
       }
