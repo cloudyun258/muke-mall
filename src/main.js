@@ -6,6 +6,8 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyload from 'vue-lazyload'
 import { moneyFormat } from '../utils/money'
+import { Pagination } from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 
 // 全局导入 reset.styl 文件
 import '@/assets/stylus/reset.styl'
@@ -14,6 +16,9 @@ import '@/assets/stylus/iconfont.styl'
 
 // 通过 vue-axios 将 axios 挂载到 vue实例 上
 Vue.use(VueAxios, axios)
+
+// elementui 分页组件
+Vue.use(Pagination)
 
 // 图片懒加载插件全局配置
 Vue.use(VueLazyload, {
@@ -49,6 +54,9 @@ axios.interceptors.response.use(function (response) {
   // 对响应错误做些什么
   return Promise.reject(error.response.data)
 })
+
+// 挂载一个空vue实例, 用于组件通讯
+Vue.prototype.bus = new Vue()
 
 new Vue({
   router,

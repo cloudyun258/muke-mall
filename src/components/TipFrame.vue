@@ -41,14 +41,14 @@
         type: Number,
         default: 3000
       },
-      // 控制显示
+      // 控制消息框的显示
       tipFlag: {
         type: Boolean,
         default: false
       }
     },
     watch: {
-      // 当 tipFalg 变为true时, 规定时间内自动隐藏
+      // 当 tipFlag 变为true时, 规定时间内自动隐藏
       tipFlag (newVal) {
         if (newVal) {
           setTimeout(() => {
@@ -73,13 +73,17 @@
   @import "../assets/stylus/mixins.styl"
   
   .tip-frame
-    pos-base(fixed, 50%, 50px, auto, auto, 40px)
-    line-height: 40px
+    pos-base(fixed, 50%, 50px, auto, auto, 35px)
+    line-height: 35px
     transform: translateX(-50%)
-    padding: 0 60px
+    padding: 0 35px
+    font-size: $fontI
+    white-space: nowrap 
+    z-index: 995
     @media only screen and (max-width: 767px)
-      padding: 0 40px
-      font-size: $fontI 
+      padding: 0 25px
+    @media only screen and (max-width: 400px)
+      transform: translateX(-50%) scale(.8)
     &.slidefade-enter
       top: -40%
       opacity: 1 

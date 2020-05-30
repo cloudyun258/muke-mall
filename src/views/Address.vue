@@ -1,12 +1,19 @@
 <template>
   <div class="address">
-    address
+    <nav-bread navname="Address"></nav-bread>
   </div>
 </template>
 
 <script>
+  import NavBread from "@/components/NavBread"
+  import ModelFrame from "@/components/ModelFrame"
+
   export default {
-    name: 'Address'
+    name: 'Address',
+    components: {
+      NavBread,
+      ModelFrame
+    }
   }
 </script>
 

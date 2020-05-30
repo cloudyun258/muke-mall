@@ -54,7 +54,8 @@
       </template>
     </model-frame>
     <tip-frame 
-      ref="tips" 
+      ref="tips"
+      :mode="tipMode"
       :message="tipMsg" 
       :tipFlag="tipFlag"
       @showmsg="tipFlag=true"
@@ -86,11 +87,20 @@
         tipMsg: '',
         // 控制消息框的显示
         tipFlag: false,
+        // 消息框类型
+        tipMode: 0,
         // 登录注册框框标题
         title: 'Login in',
         // 登录注册的切换
         toggleType: true 
       }
+    },
+    created () {
+      this.bus.$on('showtip', data => {
+       this.tipMode = data.mode
+       this.tipMsg = data.message
+       this.tipFlag = true
+     })
     },
     computed: {
        // 使用 state 中的 username, 这里不直接写在data中是因为 axios请求需要时间
@@ -131,6 +141,7 @@
               // 登录成功
               this.tipMsg = res.msg
               this.tipFlag = true
+              this.tipMode = 0
               this.showModel = false
               // 计算商品总数
               let cartCount = 0
@@ -160,11 +171,14 @@
       logout () {
         this.tipMsg = '退出成功'
         this.tipFlag = true
+        this.tipMode = 0
         // 清除vuex中的数据
         this.$store.dispatch('saveUserName', '')
         this.$store.dispatch('saveCartCount', 0)
         // 移除token
         localStorage.removeItem('token')
+        // 跳回首页
+        this.$router.push('/goods')
       },
       // 跳转到购物车
       goCart () {

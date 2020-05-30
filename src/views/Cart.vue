@@ -22,7 +22,7 @@
       <div class="title-wrap">
         <h2 class="title">MY CART</h2>
       </div>
-      <div class="content-wrap">
+      <div class="content-wrap" v-show="cartList.length > 0">
         <div class="content-top">
           <ul class="tab-wrap">
             <li class="tab tab-1">ITEMS</li>
@@ -37,7 +37,7 @@
             <li class="item-pro" v-for="(item, index) in cartList" :key="index">
               <div class="item-pro-1">
                 <div class="checked">
-                  <a href="javascript:;" :class="{'check-all':item.checked}">
+                  <a href="javascript:;" :class="{'check-all':item.checked}" @click="cartEdit('check', item)">
                     <svg class="icon ok-icon">
                       <use xlink:href="#icon-ok"></use>
                     </svg>
@@ -55,9 +55,9 @@
               </div>
               <div class="item-pro-3">
                 <div class="num-wrap">
-                  <span class="num-btn num-down">-</span>
+                  <span class="num-btn num-down" @click="cartEdit('cut', item)">-</span>
                   <span class="num-input">{{ item.productNum }}</span>
-                  <span class="num-btn num-up">+</span>
+                  <span class="num-btn num-up" @click="cartEdit('add', item)">+</span>
                 </div>
               </div>
               <div class="item-pro-4">
@@ -66,7 +66,7 @@
                 </div>
               </div>
               <div class="item-pro-5">
-                <a href="javascript:;">
+                <a href="javascript:;" @click="openModel(item.productId)">
                   <svg class="icon del-icon">
                     <use xlink:href="#icon-del"></use>
                   </svg>
@@ -75,9 +75,20 @@
             </li>
           </ul>
         </div>
+        <div class="content-page">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="cartTotal"
+            :page-size="pageSize"
+            :current-page="page"
+            @current-change="pageChange"
+          >
+          </el-pagination>
+        </div>
         <div class="content-foot">
           <div class="select-all">
-            <a href="javascript:;" :class="{'check-all':selectAll}">
+            <a href="javascript:;" :class="{'check-all':checkedAll}" @click="toggleCheckAll">
               <svg class="icon ok-icon">
                 <use xlink:href="#icon-ok"></use>
               </svg>
@@ -87,31 +98,36 @@
           <div class="checkout">
             <div class="item-total">
               <span class="total-txt">Item total:</span>
-              <span class="total-pro-price">{{ proTotalPrice | fmtMoney }}</span>
+              <span class="total-pro-price">{{ checkedTotalPrice | fmtMoney }}</span>
             </div>
             <div class="checkout-btn">
-              <button class="btn solid">CHECKOUT</button>
+              <button class="btn solid" :class="{'btn-ban':checkedTotalPrice == 0}" @click="goAddress">CHECKOUT</button>
             </div>
           </div>
         </div>
       </div>
+      <div class="no-data-wrap" v-show="cartList.length==0">
+        <img src="../assets/images/icon-no-data.png">
+        <p class="no-data-txt">购物车空空如也~</p>
+      </div>
     </div>
-     <tip-frame 
-      ref="tips" 
-      :message="tipMsg" 
-      :tipFlag="tipFlag"
-      :mode="tipMode"
-      @showmsg="tipFlag=true"
-      @hidemsg="tipFlag=false"
-    >
-    </tip-frame>
+    <model-frame :showModel="showModel" @closeframe="showModel=false">
+      <template v-slot:content>
+         <div class="tips">
+          <span class="msg">确认要删除此商品？</span>
+        </div>
+        <div class="btn-wrap">
+          <a href="javascript:;" class="btn empty" @click="cartDel">确认</a>
+          <a href="javascript:;" class="btn solid" @click="showModel=false">取消</a>
+        </div>
+      </template>
+    </model-frame>
   </div>
 </template>
 
 <script>
   import NavBread from "@/components/NavBread"
   import ModelFrame from "@/components/ModelFrame"
-  import TipFrame from "@/components/TipFrame"
 
   export default {
     name: 'Cart',
@@ -119,58 +135,121 @@
       return {
         // 购物车列表数据
         cartList: [],
-        // 消息框内容
-        tipMsg: '',
-        // 控制消息框的显示
-        tipFlag: false,
-        // 消息框类型
-        tipMode: 1
+        // 购物车商品总数量
+        cartTotal: 20,
+        // 每页显示的个数
+        pageSize: 5,
+        // 当前页数
+        page: 1,
+        // 控制删除模态框的显示
+        showModel: false,
+         // 购物车已选商品的总价
+        checkedTotalPrice: 0,
+         // 是否全选中
+        checkedAll: true,
+        // 要删除的商品Id
+        proId: ''
       }
     },
     mounted () {
       this.getCartList()
     },
-    computed: {
-      // 计算购物车已选商品的总价
-      proTotalPrice () {
-        let totalPrice = 0
-        this.cartList.forEach((item, index) => {
-          if (item.checked) {
-            totalPrice += item.totalPrice
-          }
-        })
-        return totalPrice
-      },
-      // 计算是否全选中
-      selectAll () {
-        let flag = true
-        this.cartList.forEach((item, index) => {
-          if (!item.checked) {
-            flag = false
-          }
-        })
-        return flag
-      }
-    },
     methods: {
       // 获取购物车数据
       getCartList () {
-        this.axios.get('/cartList').then(res => {
-          console.log(res)
+        this.axios.get('/cartList', {
+          params: {
+            pageSize: this.pageSize,
+            page: this.page
+          }
+        }).then(res => {
           if (res.status === 1) {
-            this.tipMsg = res.msg
-            this.tipFlag = true
+            // 显示消息框
+            this.bus.$emit('showtip', {
+              mode: 1,
+              message: res.msg
+            })
             this.$router.push('/goods')
             return
           }
-          this.cartList = res.data
+          this.cartTotal = res.data.total
+          this.cartList = res.data.cartList
+          this.checkedTotalPrice = res.data.checkedTotalPrice
+          this.checkedAll = res.data.checkedAll
         })
+      },
+      // 页数改变时触发
+      pageChange (currentPage) {
+        // 设置当前页并重新获取数据
+        this.page = currentPage
+        this.getCartList()
+      },
+      // 编辑商品
+      cartEdit (type, product) {
+        // 商品数量不能少于1件
+        if (product.productNum == 1 && type === 'cut') {
+          this.bus.$emit('showtip', {
+            mode: 2,
+            message: '商品不能少于1件'
+          })
+          return
+        }
+        this.axios.patch('/cartEdit', {
+          editType: type,
+          productId: product.productId
+        }).then(res => {
+          // 商品不存在或库存不足
+          if (res.status === 1) {
+            this.bus.$emit('showtip', {
+              mode: 2,
+              message: res.msg
+            })
+            return
+          }
+          // 更新vuex中购物车商品总数量
+          this.$store.dispatch('saveCartCount', res.cartCount)
+          this.getCartList()
+        }).catch(err => {})
+      },
+      // 全选非全选切换
+      toggleCheckAll () {
+        this.axios.patch('/cartChecked', {
+          checkedAllFlag: !this.checkedAll
+        }).then(res => {
+          // 设置成功重新拉取数据
+          this.getCartList()
+        }).catch(err => {})
+      },
+      // 打开删除提示框并记录要删除的商品Id
+      openModel (productId) {
+        this.showModel = true
+        this.proId = productId
+      },
+      // 删除购物车商品
+      cartDel () {
+        this.axios.delete('/cartDel', {
+          params: {
+            productId: this.proId
+          }
+        }).then(res => {
+          // 如果当前页不是第一页而且该页只有一条数据
+          if (this.cartList.length == 1 && this.page > 1) {
+            this.page --
+          }
+          // 更新vuex中购物车商品总数量
+          this.$store.dispatch('saveCartCount', res.cartCount)
+          this.showModel = false
+          this.getCartList()
+        }).catch(err => {})
+      },
+      // 跳转到地址列表
+      goAddress () {
+        if (this.checkedTotalPrice > 0) this.$router.push('/address')
       }
     },
     components: {
       NavBread,
-      ModelFrame,
-      TipFrame
+      ModelFrame
     }
   }
 </script>
@@ -183,8 +262,8 @@
     padding-bottom: 50px
     @media only screen and (max-width: 767px)
       padding-bottom: 0
-    .container
-        padding: 0
+      .container
+          padding: 0
     .title-wrap
       .title
         padding: 40px 0 20px 0
@@ -200,6 +279,7 @@
           font-size: 1.4rem
           border-bottom: 1px solid $colorL
           text-align: center
+    
     .content-wrap
       .tab-1, .item-pro-1
         width: 42.22%
@@ -356,10 +436,20 @@
               fill: $colorF
               &:hover
                 fill: $colorA
+      .content-page
+        text-align: right
+        margin-top: 20px
+        margin-bottom: 50px
+        >>> .el-pagination
+          padding: 2px 0
+          .btn-next
+            margin-right: 0 
+        @media only screen and (max-width: 767px)
+          text-align: center
+          margin-bottom: 40px  
       .content-foot
         flex-one()
         height: 56px 
-        margin-top: 20px
         background-color: $colorG 
         font-size: $fontH
         border: 1px solid $colorL
@@ -418,8 +508,43 @@
             .btn
               height:100%
               padding: 0 10px
+              &.btn-ban
+                background-color: #f16f75
+                border-color: #f16f75
+                color: $colorG !important
               @media only screen and (max-width: 320px)
                 padding: 0 5px
                 font-size: $fontJ
+    .no-data-wrap
+      width: 25%
+      margin: 20px auto
+      text-align: center
+      @media only screen and (max-width: 767px)
+        width: 30%
+       @media only screen and (max-width: 400px)
+         width: 35% 
+      img
+        width: 100%
+      .no-data-txt
+        color: #ada9a5
+        margin-top: 15px
+        @media only screen and (max-width: 767px)
+          font-size: $fontI
+    .tips
+      text-align: center
+      margin-bottom: 70px
+      @media only screen and (max-width: 767px)
+        font-size: $fontJ
+        margin-bottom: 50px 
+      .msg
+        font-weight: 200
+        font-size: $fontI
+     .btn-wrap
+      .btn  
+        width: 45%
+        margin: 0 2.5%
+        @media only screen and (max-width: 767px)
+          font-size: $fontJ
+ 
 
 </style>

@@ -98,22 +98,12 @@
         </div>
       </template>
     </model-frame>
-    <tip-frame 
-      ref="tips" 
-      :message="tipMsg" 
-      :tipFlag="tipFlag"
-      :mode="tipMode"
-      @showmsg="tipFlag=true"
-      @hidemsg="tipFlag=false"
-    >
-    </tip-frame>
   </div>
 </template>
 
 <script>
   import NavBread from "@/components/NavBread"
   import ModelFrame from "@/components/ModelFrame"
-  import TipFrame from "@/components/TipFrame"
   import infiniteScroll from 'vue-infinite-scroll'
 
   export default {
@@ -141,12 +131,6 @@
         busy: false,
         // 控制加载动画的显示
         loading: false,
-        // 消息内容
-        tipMsg: '',
-        // 控制消息框的显示
-        tipFlag: false,
-        // 消息框的类型
-        tipMode: 0
       }
     },
     created () {
@@ -226,9 +210,11 @@
           productId: productId
         }).then(res => {
           if (res.status === 1) {
-            this.tipMsg = res.msg
-            this.tipMode = 1
-            this.tipFlag = true
+            // 显示消息框
+            this.bus.$emit('showtip', {
+              mode: 1,
+              message: res.msg
+            })
             return
           }
           let cartCount = 0
@@ -246,8 +232,7 @@
     },
     components: {
       NavBread,
-      ModelFrame,
-      TipFrame
+      ModelFrame
     }
   }
 </script>
