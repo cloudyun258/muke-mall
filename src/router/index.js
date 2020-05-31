@@ -29,7 +29,7 @@ const routes = [
         name: 'Address',
         component: Address
       }, {
-        path: 'orderConfirm/:id',
+        path: 'orderConfirm',
         name: 'orderConfirm',
         component: OrderConfirm
       }, {

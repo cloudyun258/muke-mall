@@ -59,7 +59,7 @@
         padding: 60px 30px
       @media only screen and (max-width: 400px)
         width: 300px
-        padding: 60px 30px
+        padding: 40px 30px
       &.fade-enter, &.fade-leave-to
         opacity: 0
         transform: translate(-50%, -34%) 

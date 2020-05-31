@@ -79,7 +79,7 @@
     padding: 0 35px
     font-size: $fontI
     white-space: nowrap 
-    z-index: 995
+    z-index: 9999
     @media only screen and (max-width: 767px)
       padding: 0 25px
     @media only screen and (max-width: 400px)

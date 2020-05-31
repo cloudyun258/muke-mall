@@ -546,5 +546,4 @@
         @media only screen and (max-width: 767px)
           font-size: $fontJ
  
-
 </style>

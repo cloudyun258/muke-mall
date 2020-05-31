@@ -6,7 +6,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyload from 'vue-lazyload'
 import { moneyFormat } from '../utils/money'
-import { Pagination } from 'element-ui'
+import { Pagination, Form, FormItem, Input, Switch, Button } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 // 全局导入 reset.styl 文件
@@ -19,6 +19,14 @@ Vue.use(VueAxios, axios)
 
 // elementui 分页组件
 Vue.use(Pagination)
+// 表单组件
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Input)
+// 开关组件
+Vue.use(Switch)
+// 按钮组件
+Vue.use(Button)
 
 // 图片懒加载插件全局配置
 Vue.use(VueLazyload, {
