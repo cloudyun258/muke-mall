@@ -95,12 +95,23 @@
         toggleType: true 
       }
     },
+    watch: {
+      // 关闭登录框时重置状态
+      showModel (newVal) {
+        if (!newVal) {
+          this.errorFlag = false
+          this.toggleType = true
+          this.title = 'Login in'
+        }
+      }
+    },
     created () {
+      // 用于兄弟组件中的通信
       this.bus.$on('showtip', data => {
-       this.tipMode = data.mode
-       this.tipMsg = data.message
-       this.tipFlag = true
-     })
+        this.tipMode = data.mode
+        this.tipMsg = data.message
+        this.tipFlag = true
+      })
     },
     computed: {
        // 使用 state 中的 username, 这里不直接写在data中是因为 axios请求需要时间

@@ -79,7 +79,7 @@
           width: 100%
           text-align: center 
         .region
-          color: #ada9a5
+          color: $colorK
         .language
           padding: 2px 0
           font-size: 1.4rem 
@@ -89,11 +89,11 @@
           text-align: center
           margin-top: 50px 
         .copyright
-          color: #ada9a5
+          color: $colorK
           @media screen and (max-width: 991px)
             font-size: $fontJ 
         a
-          color: #ada9a5
+          color: $colorK
           margin-left: 43.5px
           @media only screen and (max-width: 1440px)
             margin-left: 21px 
@@ -103,7 +103,7 @@
             display: block
             margin-top: 19.5px 
           &:hover
-            color: #ada9a5 !important
+            color: $colorK !important
     .about, .skill, .contact
       margin-bottom: 20px 
     .title

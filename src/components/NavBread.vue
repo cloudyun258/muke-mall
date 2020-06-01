@@ -14,7 +14,6 @@
 
 <style scoped lang="stylus">
   @import "../assets/stylus/variable.styl"
-  @import "../assets/stylus/mixins.styl"
 
   .nav-bread
     background-color: #f0f0f0

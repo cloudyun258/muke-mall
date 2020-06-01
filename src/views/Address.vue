@@ -166,7 +166,7 @@
           ],
           phone: [
             { required: true, message: '请输入电话', trigger: 'blur' },
-            { pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }
+            { pattern: /^1[345678]\d{9}$/, message: '请输入正确的手机号' }
           ],
           street: [
             { required: true, message: '请输入地址', trigger: 'blur' }
@@ -189,14 +189,6 @@
       // 获取地址列表
       getAddressList () {
         this.axios.get('/addressList').then(res => {
-          if (res.status === 1) {
-            this.bus.$emit('showtip', {
-              mode: 1,
-              message: res.msg
-            })
-            this.$router.push('/goods')
-            return
-          }
           this.addressList = res.data
           // 如果当前是展开, 直接赋值
           if (this.addressFlag) {
@@ -276,7 +268,6 @@
           street: this.ruleForm.street,
           isDefault: this.ruleForm.default
         }).then(res => {
-          console.log(res)
           this.showAddModel = false
           this.getAddressList()
         }).catch(res => {})
@@ -478,7 +469,6 @@
             width: 100%
             height: 50px
             line-height: 50px
-
     .tips
       text-align: center
       margin-bottom: 70px

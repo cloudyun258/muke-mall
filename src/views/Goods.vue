@@ -209,14 +209,6 @@
         this.axios.post('/addCart', {
           productId: productId
         }).then(res => {
-          if (res.status === 1) {
-            // 显示消息框
-            this.bus.$emit('showtip', {
-              mode: 1,
-              message: res.msg
-            })
-            return
-          }
           let cartCount = 0
             res.data.cartList.forEach(item => {
               cartCount += item.productNum 
@@ -399,7 +391,7 @@
             &:nth-child(4n)
               margin-right: 0
             &:hover
-              border-color: #ee7a23
+              border-color: $colorB
               transform: translateY(-5px)
               box-shadow: 0 0 10px $colorF
             @media only screen and (max-width: 991px)

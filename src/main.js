@@ -56,8 +56,22 @@ axios.interceptors.request.use(function (config) {
 
 // 响应拦截器
 axios.interceptors.response.use(function (response) {
+  let res = response.data
+  // 状态码10表示未登录
+  if (res.status == 10) {
+    Vue.prototype.bus.$emit('showtip', {
+      mode: 1,
+      message: res.msg
+    })
+     // 清除vuex中的数据
+    store.dispatch('saveUserName', '')
+    store.dispatch('saveCartCount', 0)
+    router.push('/goods')
+    // 未登录让其走 catch() 而不是 then()
+    return Promise.reject(res)
+  }
   // 获取服务器返回的数据
-  return response.data
+  return res
 }, function (error) {
   // 对响应错误做些什么
   return Promise.reject(error.response.data)

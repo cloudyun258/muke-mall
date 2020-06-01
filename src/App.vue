@@ -14,17 +14,15 @@
     },
     methods: {
       getUserInfo () {
-        this.axios.get('/userInfo').then(res => {
-          if (res.status === 0) {
-            // 计算商品总数
-            let cartCount = 0
-            res.data.cartList.forEach(item => {
-              cartCount += item.productNum 
-            })
-            // 保存用户名和购物车数量到vuex中
-            this.$store.dispatch('saveUserName', res.data.userName)
-            this.$store.dispatch('saveCartCount', cartCount)
-          }
+        this.axios.get('/userInfo').then(res => { 
+          // 计算商品总数
+          let cartCount = 0
+          res.data.cartList.forEach(item => {
+            cartCount += item.productNum 
+          })
+          // 保存用户名和购物车数量到vuex中
+          this.$store.dispatch('saveUserName', res.data.userName)
+          this.$store.dispatch('saveCartCount', cartCount)     
         }).catch(err => {})
       }
     }
@@ -32,5 +30,6 @@
 </script>
 
 <style scoped lang="stylus">
-
+  #app
+    overflow: hidden
 </style>

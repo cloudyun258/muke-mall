@@ -163,15 +163,6 @@
             page: this.page
           }
         }).then(res => {
-          if (res.status === 1) {
-            // 显示消息框
-            this.bus.$emit('showtip', {
-              mode: 1,
-              message: res.msg
-            })
-            this.$router.push('/goods')
-            return
-          }
           this.cartTotal = res.data.total
           this.cartList = res.data.cartList
           this.checkedTotalPrice = res.data.checkedTotalPrice
@@ -279,7 +270,6 @@
           font-size: 1.4rem
           border-bottom: 1px solid $colorL
           text-align: center
-    
     .content-wrap
       .tab-1, .item-pro-1
         width: 42.22%

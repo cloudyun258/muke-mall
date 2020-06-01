@@ -1,0 +1,19 @@
+{
+  "name": "muke-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.8.28",
+    "express": "^5.0.0-alpha.8",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.14"
+  }
+}
