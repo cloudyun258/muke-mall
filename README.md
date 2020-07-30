@@ -1,12 +1,10 @@
-### Muke-Mall简易商城
+# Muke-Mall
+
+muke-mall 是使用 Vue.js 开发的简易商城网站
 
 <br>
 
---->    muke-mall 是使用 Vue.js 开发的简易商城网站
-
-<br>
-
---->    muke-api 是使用 Node.js + Mongoose + Express 开发的后台接口
+muke-api 是使用 Node.js + Mongoose + Express 开发的后台接口
 
 <br>
 
