@@ -1,11 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home'
-import Address from '../views/Address'
-import Cart from '../views/Cart'
-import Goods from '../views/Goods'
-import OrderConfirm from '../views/OrderConfirm'
-import OrderSuccess from '../views/OrderSuccess'
 
 Vue.use(VueRouter)
 
@@ -13,29 +7,29 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import('../views/Home'),
     redirect: '/goods',
     children: [
       {
         path: 'goods',
         name: 'Goods',
-        component: Goods
+        component: () => import('../views/Goods')
       }, {
         path: 'cart',
         name: 'Cart',
-        component: Cart
+        component: () => import('../views/Cart')
       }, {
         path: 'address',
         name: 'Address',
-        component: Address
+        component: () => import('../views/Address')
       }, {
         path: 'orderConfirm',
         name: 'orderConfirm',
-        component: OrderConfirm
+        component: () => import('../views/OrderConfirm')
       }, {
         path: 'orderSuccess',
         name: 'orderSuccess',
-        component: OrderSuccess
+        component: () => import('../views/OrderSuccess')
       }
     ]
   } 
